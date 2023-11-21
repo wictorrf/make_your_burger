@@ -79,17 +79,6 @@
   ],
   "burgers": [
     {
-      "nome": "João Coelho",
-      "carne": "Maminha",
-      "pao": "3 Queijos",
-      "opcionais": [
-        "Salame",
-        "Cebola roxa"
-      ],
-      "status": "Solicitado",
-      "id": 4
-    },
-    {
       "nome": "Juninho",
       "carne": null,
       "pao": "3 Queijos",
@@ -97,7 +86,7 @@
         "Bacon",
         "Tomate"
       ],
-      "status": "Solicitado",
+      "status": "Em produção",
       "id": 5
     },
     {
@@ -108,20 +97,8 @@
         "Salame",
         "Cheddar"
       ],
-      "status": "Solicitado",
+      "status": "Em produção",
       "id": 6
-    },
-    {
-      "nome": "Raissa",
-      "carne": "Alcatra",
-      "pao": "Parmesão e Orégano",
-      "opcionais": [
-        "Bacon",
-        "Cheddar",
-        "Cebola roxa"
-      ],
-      "status": "Solicitado",
-      "id": 7
     }
   ]
 }
