@@ -1,7 +1,7 @@
 <template>
   <div>
-    <p>Componente de mensagem</p>
-    <form action="" id="burger-form">
+    <Message :msg="msg" v-show="msg" />
+    <form action="" class="burger-form" @submit="createBurger">
       <div class="input-container">
         <label for="nome">Nome do cliente</label>
         <input
@@ -14,35 +14,162 @@
       </div>
       <div class="input-container">
         <label for="pao">Escolha seu pao:</label>
-        <select name="pao" id="pao">
+        <select name="pao" id="pao" v-model="pao">
           <option value="">Selecione seu pao</option>
+          <option v-for="pao in paes" :key="pao.id" :value="pao.tipo">
+            {{ pao.tipo }}
+          </option>
         </select>
       </div>
       <div class="input-container">
         <label for="carne">Escolha a carne:</label>
-        <select name="carne" id="carne">
+        <select name="carne" id="carne" v-model="carne">
           <option value="">Selecione sua carne</option>
+          <option v-for="carne in carnes" :key="carne.id" :value="carne.tipo">
+            {{ carne.tipo }}
+          </option>
         </select>
       </div>
-      <div class="input-container">
-        <label for="opcionais">Escolha opcionais:</label>
-        <div class="checkbox-container">
+      <div id="opcionais-container" class="input-container">
+        <label id="opcionais-title" for="opcionais">Escolha opcionais:</label>
+        <div
+          v-for="opcional in opcionaisdata"
+          :key="opcional.id"
+          class="checkbox-container"
+        >
           <input
             type="checkbox"
             name="opcionais"
             v-model="opcionais"
-            value="salame"
+            :value="opcional.tipo"
           />
-          <span>Salame</span>
+          <span> {{ opcional.tipo }} </span>
+        </div>
+        <div class="input-container">
+          <input type="submit" class="submit-btn" value="Criar meu burger" />
         </div>
       </div>
     </form>
   </div>
 </template>
 <script>
+import Message from "./Message.vue";
 export default {
   name: "BurrgerForm",
+  data() {
+    return {
+      paes: null,
+      carnes: null,
+      opcionaisdata: null,
+      nome: null,
+      pao: null,
+      carne: null,
+      opcionais: [],
+      msg: null,
+    };
+  },
+  components: {
+    Message,
+  },
+  methods: {
+    async getIngredientes() {
+      const req = await fetch("http://localhost:3000/ingredientes");
+      const data = await req.json();
+      this.paes = data.paes;
+      this.carnes = data.carnes;
+      this.opcionaisdata = data.opcionais;
+    },
+    async createBurger(e) {
+      e.preventDefault();
+      const data = {
+        nome: this.nome,
+        carne: this.carne,
+        pao: this.pao,
+        opcionais: Array.from(this.opcionais),
+        status: "Solicitado",
+      };
+      const datajson = JSON.stringify(data);
+      const req = await fetch("http://localhost:3000/burgers", {
+        method: "POST",
+        headers: { "Content-type": "application/json" },
+        body: datajson,
+      });
+      console.log(data);
+      const res = await req.json();
+
+      this.msg = `Pedido N ${res.id} realizado com sucesso!`;
+
+      setTimeout(() => {
+        this.msg = "";
+      }, 3000);
+
+      (this.nome = ""),
+        (this.carne = ""),
+        (this.pao = ""),
+        (this.opcionais = ""),
+        (this.status = "");
+    },
+  },
+  mounted() {
+    this.getIngredientes();
+  },
 };
 </script>
 <style scoped>
+.burger-form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+.input-container {
+  display: flex;
+  flex-direction: column;
+}
+label {
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #222;
+  padding: 5px 10px;
+  border-left: 4px solid #fcba03;
+}
+input,
+select {
+  padding: 5px 10px;
+  width: 300px;
+}
+#opcionais-container {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+#opcionais-title {
+  width: 100%;
+}
+.checkbox-container {
+  display: flex;
+  align-items: flex-start;
+  width: 50%;
+  margin-bottom: 20px;
+}
+.checkbox-container span,
+.checkbox-container input {
+  width: auto;
+}
+.checkbox-container span {
+  margin-left: 6px;
+  font-weight: bold;
+}
+.submit-btn {
+  background-color: #222;
+  color: #fcba03;
+  font-weight: bold;
+  border: 2px solid #222;
+  padding: 10px;
+  font-size: 15px;
+  margin: 0 auto;
+  cursor: pointer;
+  transition: 0.5s;
+}
+.submit-btn:hover {
+  background-color: transparent;
+  color: #222;
+}
 </style>
